@@ -35,9 +35,9 @@ HUBOT_TRELLO_TOKEN  - Trello API token
 HUBOT_TRELLO_BOARD  - The ID of the Trello board you will be working with
 ```
 
-- To get your key, go to: https://trello.com/1/appKey/generate
-- To get your token, go to: https://trello.com/1/authorize?key=<<your key>>&name=Hubot+Trello&expiration=never&response_type=token&scope=read,write
-- Figure out what board you want to use, grab it's id from the url (https://trello.com/board/<<board name>>/<<board id>>)
+- To get your key, go to: `https://trello.com/1/appKey/generate`
+- To get your token, go to: `https://trello.com/1/authorize?key=<<your key>>&name=Hubot+Trello&expiration=never&response_type=token&scope=read,write`
+- Figure out what board you want to use, grab it's id from the url `https://trello.com/board/<<board name>>/<<board id>>`
 
 
 ## Sample Interaction
