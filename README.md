@@ -6,7 +6,7 @@ manage your trello board from hubot
 
 ## Installation
 
-Add **hubot-motivate** to your `package.json` file:
+Add **hubot-trello** to your `package.json` file:
 
 ```json
 "dependencies": {
