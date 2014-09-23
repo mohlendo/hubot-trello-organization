@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fragcastle/hubot-trello"
+    "url": "https://github.com/hubot-scripts/hubot-trello"
   },
   "keywords": [
     "hubot",
@@ -18,9 +18,9 @@
   "author": "Jared Barboza <jared.m.barboza@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/fragcastle/hubot-trello/issues"
+    "url": "https://github.com/hubot-scripts/hubot-trello/issues"
   },
-  "homepage": "https://github.com/fragcastle/hubot-trello",
+  "homepage": "https://github.com/hubot-scripts/hubot-trello",
   "dependencies": {
     "coffee-script": "^1.8.0",
     "node-trello": "^0.1.5"
