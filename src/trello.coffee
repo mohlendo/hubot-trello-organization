@@ -96,3 +96,17 @@ module.exports = (robot) ->
 
   robot.respond /trello move (\w+) ["'](.+)["']/i, (msg) ->
     moveCard msg, msg.match[1], msg.match[2]
+
+  robot.respond /trello list lists/i, (msg) ->
+    msg.reply "Here are all the lists on your board."
+    Object.keys(lists).forEach (key) ->
+      msg.send " * " + key
+
+  robot.respond /trello help/i, (msg) ->
+    msg.reply "Here are all the commands for me."
+    msg.send " *  trello new \"<ListName>\" <TaskName>"
+    msg.send " *  trello list \"<ListName>\""
+    msg.send " *  shows * [<card.shortLink>] <card.name> - <card.shortUrl>"
+    msg.send " *  trello move <card.shortlink> \"<ListName>\""
+    msg.send " *  trello list lists"
+

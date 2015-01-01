@@ -54,4 +54,16 @@ Hubot> user1: Here are all the cards in To Do
 Hubt> * [<shortLink>] <card_name> - <card_url>
 Hubt> * [<shortLink>] <card_name> - <card_url>
 Hubt> * [<shortLink>] <card_name> - <card_url>
+user1> hubot trello list lists
+Hubt> user1: Here are all the lists on your board.
+Hubt> * to do
+Hubt> * doing
+Hubt> * done
 ```
+
+And you can use a little help command.
+
+```
+user1> trello help
+```
+
