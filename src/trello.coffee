@@ -29,33 +29,71 @@ trello = new Trello process.env.HUBOT_TRELLO_KEY, process.env.HUBOT_TRELLO_TOKEN
 ensureConfig = (out) ->
   out "Error: Trello app key is not specified" if not process.env.HUBOT_TRELLO_KEY
   out "Error: Trello token is not specified" if not process.env.HUBOT_TRELLO_TOKEN
-  out "Error: Trello board ID is not specified" if not process.env.HUBOT_TRELLO_BOARD
-  return false unless (process.env.HUBOT_TRELLO_KEY and process.env.HUBOT_TRELLO_TOKEN and process.env.HUBOT_TRELLO_BOARD)
+  out "Error: Trello organization ID is not specified" if not process.env.HUBOT_TRELLO_ORGANIZATION
+  return false unless (process.env.HUBOT_TRELLO_KEY and process.env.HUBOT_TRELLO_TOKEN and process.env.HUBOT_TRELLO_ORGANIZATION)
   true
 
 ##############################
 # API Methods
 ##############################
 
+showBoards = (msg) ->
+  msg.reply "Sure thing boss. I'll list the boards for you."
+  ensureConfig msg.send
+  trello.get "/1/organizations/#{process.env.HUBOT_TRELLO_ORGANIZATION}/boards", (err, data) ->
+    msg.reply "There was an error reading the list of boards" if err
+    msg.send "* #{board.id} - #{board.name}" for board in data unless err and data.length == 0
+
+showLists = (msg) ->
+  msg.reply "Looking up the lists for #{msg.room}, one sec."
+  ensureConfig msg.send
+  trello.get "/1/organizations/#{process.env.HUBOT_TRELLO_ORGANIZATION}/boards", (err, data) ->
+    msg.reply "There was an error reading the list of boards" if err
+    for board in data
+      msg.send "#{board.id} - #{board.name}"
+      if board.name.toLowerCase() == msg.room.toLowerCase()
+        trello.get "/1/boards/#{board.id}/lists", (err, data) ->
+          msg.reply "There was an error reading the lists" if err
+          msg.send "* #{list.name}" for list in data unless err and data.length == 0
+        break
+
 createCard = (msg, list_name, cardName) ->
   msg.reply "Sure thing boss. I'll create that card for you."
   ensureConfig msg.send
-  id = lists[list_name.toLowerCase()].id
-  trello.post "/1/cards", {name: cardName, idList: id}, (err, data) ->
-    msg.reply "There was an error creating the card" if err
-    msg.reply "OK, I created that card for you. You can see it here: #{data.url}" unless err
+  trello.get "/1/organizations/#{process.env.HUBOT_TRELLO_ORGANIZATION}/boards", (err, data) ->
+    msg.reply "There was an error reading the list of boards" if err
+    for board in data
+      msg.send "#{board.id} - #{board.name}"
+      if board.name.toLowerCase() == msg.room.toLowerCase()
+        trello.get "/1/boards/#{board.id}/lists", (err, data) ->
+          msg.reply "There was an error reading the lists" if err
+          for list in data
+            if list.name.toLowerCase() == list_name.toLowerCase()
+              trello.post "/1/cards", {name: cardName, idList: list.id}, (err, data) ->
+                msg.reply "There was an error creating the card" if err
+                msg.reply "OK, I created that card for you. You can see it here: #{data.url}" unless err
+              break
+        break
 
 showCards = (msg, list_name) ->
   msg.reply "Looking up the cards for #{list_name}, one sec."
   ensureConfig msg.send
-  id = lists[list_name.toLowerCase()].id
-  msg.send "I couldn't find a list named: #{list_name}." unless id
-  if id
-    trello.get "/1/lists/#{id}", {cards: "open"}, (err, data) ->
-      msg.reply "There was an error showing the list." if err
-      msg.reply "Here are all the cards in #{data.name}:" unless err and data.cards.length == 0
-      msg.send "* [#{card.shortLink}] #{card.name} - #{card.shortUrl}" for card in data.cards unless err and data.cards.length == 0
-      msg.reply "No cards are currently in the #{data.name} list." if data.cards.length == 0 and !err
+  trello.get "/1/organizations/#{process.env.HUBOT_TRELLO_ORGANIZATION}/boards", (err, data) ->
+    msg.reply "There was an error reading the list of boards" if err
+    for board in data
+      msg.send "#{board.id} - #{board.name}"
+      if board.name.toLowerCase() == msg.room.toLowerCase()
+        trello.get "/1/boards/#{board.id}/lists", (err, data) ->
+          msg.reply "There was an error reading the lists" if err
+          for list in data
+            if list.name.toLowerCase() == list_name.toLowerCase()
+              trello.get "/1/lists/#{list.id}", {cards: "open"}, (err, data) ->
+                msg.reply "There was an error showing the list." if err
+                msg.reply "Here are all the cards in #{data.name}:" unless err and data.cards.length == 0
+                msg.send "* [#{card.shortLink}] #{card.name} - #{card.shortUrl}" for card in data.cards unless err and data.cards.length == 0
+                msg.reply "No cards are currently in the #{data.name} list." if data.cards.length == 0 and !err
+              break
+        break
 
 moveCard = (msg, card_id, list_name) ->
   ensureConfig msg.send
@@ -109,4 +147,3 @@ module.exports = (robot) ->
     msg.send " *  shows * [<card.shortLink>] <card.name> - <card.shortUrl>"
     msg.send " *  trello move <card.shortlink> \"<ListName>\""
     msg.send " *  trello list lists"
-
