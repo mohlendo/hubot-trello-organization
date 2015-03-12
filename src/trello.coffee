@@ -49,13 +49,17 @@ showLists = (msg) ->
   ensureConfig msg.send
   trello.get "/1/organizations/#{process.env.HUBOT_TRELLO_ORGANIZATION}/boards", (err, data) ->
     msg.reply "There was an error reading the list of boards" if err
+    found_board = false
     for board in data
       if board.name.toLowerCase() == msg.envelope.room.toLowerCase()
+        found_board = true
         msg.reply "I've found the board #{board.name}. Now looking for the list..."
         trello.get "/1/boards/#{board.id}/lists", (err, data) ->
           msg.reply "There was an error reading the lists" if err
           msg.send "* #{list.name}" for list in data unless err and data.length == 0
         break
+    if found_board == false
+      msg.reply "I couldn't find a board named: #{msg.envelope.room}." unless id
 
 createCard = (msg, list_name, cardName) ->
   msg.reply "Sure thing boss. I'll create that card for you."
