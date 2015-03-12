@@ -105,8 +105,9 @@ moveCard = (msg, card_id, list_name) ->
       msg.reply "Yep, ok, I moved that card to #{list_name}." unless err
 
 module.exports = (robot) ->
+  # fetch our board data when the script is loaded
   ensureConfig console.log
-  
+
   robot.respond /trello new ["'](.+)["']\s(.*)/i, (msg) ->
     ensureConfig msg.send
     card_name = msg.match[2]
@@ -134,8 +135,16 @@ module.exports = (robot) ->
     Object.keys(lists).forEach (key) ->
       msg.send " * " + key
 
+  robot.respond /trello boards/i, (msg) ->
+    showBoards msg
+
+  robot.respond /trello lists/i, (msg) ->
+    showLists msg
+
   robot.respond /trello help/i, (msg) ->
     msg.reply "Here are all the commands for me."
+    msg.send " *  trello boards"
+    msg.send " *  trello lists"
     msg.send " *  trello new \"<ListName>\" <TaskName>"
     msg.send " *  trello list \"<ListName>\""
     msg.send " *  shows * [<card.shortLink>] <card.name> - <card.shortUrl>"
