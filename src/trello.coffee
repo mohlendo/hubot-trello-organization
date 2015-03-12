@@ -45,13 +45,13 @@ showBoards = (msg) ->
     msg.send "* #{board.id} - #{board.name}" for board in data unless err and data.length == 0
 
 showLists = (msg) ->
-  msg.reply "Looking up the lists for #{msg.room}, one sec."
+  msg.reply "Looking up the lists for #{msg.envelope.room}, one sec."
   ensureConfig msg.send
   trello.get "/1/organizations/#{process.env.HUBOT_TRELLO_ORGANIZATION}/boards", (err, data) ->
     msg.reply "There was an error reading the list of boards" if err
     for board in data
       msg.send "#{board.id} - #{board.name}"
-      if board.name.toLowerCase() == msg.room.toLowerCase()
+      if board.name.toLowerCase() == msg.envelope.room.toLowerCase()
         trello.get "/1/boards/#{board.id}/lists", (err, data) ->
           msg.reply "There was an error reading the lists" if err
           msg.send "* #{list.name}" for list in data unless err and data.length == 0
@@ -64,7 +64,7 @@ createCard = (msg, list_name, cardName) ->
     msg.reply "There was an error reading the list of boards" if err
     for board in data
       msg.send "#{board.id} - #{board.name}"
-      if board.name.toLowerCase() == msg.room.toLowerCase()
+      if board.name.toLowerCase() == msg.envelope.room.toLowerCase()
         trello.get "/1/boards/#{board.id}/lists", (err, data) ->
           msg.reply "There was an error reading the lists" if err
           for list in data
