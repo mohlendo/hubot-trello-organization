@@ -59,7 +59,7 @@ showLists = (msg) ->
           msg.send "* #{list.name}" for list in data unless err and data.length == 0
         break
     if found_board == false
-      msg.reply "I couldn't find a board named: #{msg.envelope.room}." unless id
+      msg.reply "I couldn't find a board named: #{msg.envelope.room}."
 
 createCard = (msg, list_name, cardName) ->
   msg.reply "Sure thing boss. I'll create that card for you."
@@ -80,7 +80,7 @@ createCard = (msg, list_name, cardName) ->
                 msg.reply "OK, I created that card for you. You can see it here: #{data.url}" unless err
               break
           if found_list == false
-            msg.reply "I couldn't find a list named: #{list_name}." unless id
+            msg.reply "I couldn't find a list named: #{list_name}."
         break
 
 showCards = (msg, list_name) ->
@@ -104,7 +104,7 @@ showCards = (msg, list_name) ->
                 msg.reply "No cards are currently in the #{data.name} list." if data.cards.length == 0 and !err
               break
           if found_list == false
-            msg.reply "I couldn't find a list named: #{list_name}." unless id
+            msg.reply "I couldn't find a list named: #{list_name}."
         break
 
 moveCard = (msg, card_id, list_name) ->
@@ -125,7 +125,7 @@ moveCard = (msg, card_id, list_name) ->
                 msg.reply "Yep, ok, I moved that card to #{list_name}." unless err
             break;
           if found_list == false
-            msg.reply "I couldn't find a list named: #{list_name}." unless id
+            msg.reply "I couldn't find a list named: #{list_name}."
       break
 
 module.exports = (robot) ->
