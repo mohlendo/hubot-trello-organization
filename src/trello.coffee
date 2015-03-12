@@ -97,13 +97,25 @@ showCards = (msg, list_name) ->
 
 moveCard = (msg, card_id, list_name) ->
   ensureConfig msg.send
-  id = lists[list_name.toLowerCase()].id
-  msg.reply "I couldn't find a list named: #{list_name}." unless id
-  if id
-    trello.put "/1/cards/#{card_id}/idList", {value: id}, (err, data) ->
-      msg.reply "Sorry boss, I couldn't move that card after all." if err
-      msg.reply "Yep, ok, I moved that card to #{list_name}." unless err
-
+  trello.get "/1/organizations/#{process.env.HUBOT_TRELLO_ORGANIZATION}/boards", (err, data) ->
+    msg.reply "There was an error reading the list of boards" if err
+    for board in data
+      msg.send "#{board.id} - #{board.name}"
+      if board.name.toLowerCase() == msg.room.toLowerCase()
+        trello.get "/1/boards/#{board.id}/lists", (err, data) ->
+          msg.reply "There was an error reading the lists" if err
+          found_list = false
+          for list in data
+            if list.name.toLowerCase() == list_name.toLowerCase()
+              found_list = true
+              trello.put "/1/cards/#{card_id}/idList", {value: list.id}, (err, data) ->
+                msg.reply "Sorry boss, I couldn't move that card after all." if err
+                msg.reply "Yep, ok, I moved that card to #{list_name}." unless err
+            break;
+          if found_list == false
+            msg.reply "I couldn't find a list named: #{list_name}." unless id
+      break
+      
 module.exports = (robot) ->
   # fetch our board data when the script is loaded
   ensureConfig console.log
