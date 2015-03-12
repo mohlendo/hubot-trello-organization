@@ -105,14 +105,8 @@ moveCard = (msg, card_id, list_name) ->
       msg.reply "Yep, ok, I moved that card to #{list_name}." unless err
 
 module.exports = (robot) ->
-  # fetch our board data when the script is loaded
   ensureConfig console.log
-  trello.get "/1/boards/#{process.env.HUBOT_TRELLO_BOARD}", (err, data) ->
-    board = data
-    trello.get "/1/boards/#{process.env.HUBOT_TRELLO_BOARD}/lists", (err, data) ->
-      for list in data
-        lists[list.name.toLowerCase()] = list
-
+  
   robot.respond /trello new ["'](.+)["']\s(.*)/i, (msg) ->
     ensureConfig msg.send
     card_name = msg.match[2]
