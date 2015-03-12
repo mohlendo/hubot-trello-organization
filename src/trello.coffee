@@ -50,8 +50,8 @@ showLists = (msg) ->
   trello.get "/1/organizations/#{process.env.HUBOT_TRELLO_ORGANIZATION}/boards", (err, data) ->
     msg.reply "There was an error reading the list of boards" if err
     for board in data
-      msg.send "#{board.id} - #{board.name}"
       if board.name.toLowerCase() == msg.envelope.room.toLowerCase()
+        msg.reply "I've found the board #{board.name}. Now looking for the list..."
         trello.get "/1/boards/#{board.id}/lists", (err, data) ->
           msg.reply "There was an error reading the lists" if err
           msg.send "* #{list.name}" for list in data unless err and data.length == 0
@@ -63,16 +63,20 @@ createCard = (msg, list_name, cardName) ->
   trello.get "/1/organizations/#{process.env.HUBOT_TRELLO_ORGANIZATION}/boards", (err, data) ->
     msg.reply "There was an error reading the list of boards" if err
     for board in data
-      msg.send "#{board.id} - #{board.name}"
       if board.name.toLowerCase() == msg.envelope.room.toLowerCase()
+        msg.reply "I've found the board #{board.name}. Now looking for the list..."
         trello.get "/1/boards/#{board.id}/lists", (err, data) ->
           msg.reply "There was an error reading the lists" if err
           for list in data
+            found_list = false
             if list.name.toLowerCase() == list_name.toLowerCase()
+              found_list = true
               trello.post "/1/cards", {name: cardName, idList: list.id}, (err, data) ->
                 msg.reply "There was an error creating the card" if err
                 msg.reply "OK, I created that card for you. You can see it here: #{data.url}" unless err
               break
+          if found_list == false
+            msg.reply "I couldn't find a list named: #{list_name}." unless id
         break
 
 showCards = (msg, list_name) ->
@@ -81,18 +85,22 @@ showCards = (msg, list_name) ->
   trello.get "/1/organizations/#{process.env.HUBOT_TRELLO_ORGANIZATION}/boards", (err, data) ->
     msg.reply "There was an error reading the list of boards" if err
     for board in data
-      msg.send "#{board.id} - #{board.name}"
-      if board.name.toLowerCase() == msg.room.toLowerCase()
+      if board.name.toLowerCase() == msg.envelope.room.toLowerCase()
+        msg.reply "I've found the board #{board.name}. Now looking for the list..."
         trello.get "/1/boards/#{board.id}/lists", (err, data) ->
           msg.reply "There was an error reading the lists" if err
+          found_list = false
           for list in data
             if list.name.toLowerCase() == list_name.toLowerCase()
+              found_list = true
               trello.get "/1/lists/#{list.id}", {cards: "open"}, (err, data) ->
                 msg.reply "There was an error showing the list." if err
                 msg.reply "Here are all the cards in #{data.name}:" unless err and data.cards.length == 0
                 msg.send "* [#{card.shortLink}] #{card.name} - #{card.shortUrl}" for card in data.cards unless err and data.cards.length == 0
                 msg.reply "No cards are currently in the #{data.name} list." if data.cards.length == 0 and !err
               break
+          if found_list == false
+            msg.reply "I couldn't find a list named: #{list_name}." unless id
         break
 
 moveCard = (msg, card_id, list_name) ->
@@ -100,8 +108,8 @@ moveCard = (msg, card_id, list_name) ->
   trello.get "/1/organizations/#{process.env.HUBOT_TRELLO_ORGANIZATION}/boards", (err, data) ->
     msg.reply "There was an error reading the list of boards" if err
     for board in data
-      msg.send "#{board.id} - #{board.name}"
-      if board.name.toLowerCase() == msg.room.toLowerCase()
+      if board.name.toLowerCase() == msg.envelope.room.toLowerCase()
+        msg.reply "I've found the board #{board.name}. Now looking for the list..."
         trello.get "/1/boards/#{board.id}/lists", (err, data) ->
           msg.reply "There was an error reading the lists" if err
           found_list = false
@@ -115,7 +123,7 @@ moveCard = (msg, card_id, list_name) ->
           if found_list == false
             msg.reply "I couldn't find a list named: #{list_name}." unless id
       break
-      
+
 module.exports = (robot) ->
   # fetch our board data when the script is loaded
   ensureConfig console.log
