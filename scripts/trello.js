@@ -146,7 +146,7 @@ module.exports = function (robot) {
     // list all the cards in the given list of the current board
     robot.respond(/list cards in [\\"\\'](.+)[\\"\\']$/i, function (msg) {
         var listName = msg.match[1];
-        msg.reply("Looking up the cards in list" + list + ", one sec.");
+        msg.reply("Looking up the cards in list" + listName + ", one sec.");
         ensureConfig(msg.send);
         findBoard(msg, function (board) {
             findList(msg, board, listName, function (list) {
