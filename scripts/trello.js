@@ -65,7 +65,7 @@ module.exports = function (robot) {
 
     function findBoard(msg, callback) {
         var boardName = findRoom(msg);
-        var savedBoardName = getBoards()[room];
+        var savedBoardName = getBoards()[boardName];
         if (savedBoardName) {
             boardName = savedBoardName;
         }
