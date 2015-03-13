@@ -265,7 +265,7 @@ module.exports = function (robot) {
     robot.respond(/set board to [\\"\\'](.+)[\\"\\']$/i, function (msg) {
         ensureConfig(msg.send);
         var room = findRoom(msg);
-        var boardName = msg.match(1);
+        var boardName = msg.match[1];
         saveBoard(room, boardName);
         msg.send("Ok, from now on this room is combined to the trello board: " + boardName);
     });
