@@ -69,7 +69,7 @@ module.exports = function (robot) {
         if (savedBoardName) {
             boardName = savedBoardName;
         }
-        msg.reply("Using Board " + boardName);
+        msg.reply("Loading Board " + boardName);
         trello.get("/1/organizations/" + process.env.HUBOT_TRELLO_ORGANIZATION + "/boards", function (err, data) {
             if (err) {
                 callback(err);
@@ -81,6 +81,7 @@ module.exports = function (robot) {
             if (boards && boards.length > 0) {
                 callback(undefined, boards[0]);
             } else {
+                msg.reply("I couldn't find a board named: " + boardName + ".");
                 callback(undefined, undefined);
             }
         });
@@ -125,8 +126,7 @@ module.exports = function (robot) {
 
     // list all the list of the current board.
     robot.respond(/list lists$/i, function (msg) {
-        var room = findRoom(msg);
-        msg.reply("Looking up the lists for " + room + ", one sec.");
+        msg.reply("Looking up the lists, one sec.");
         ensureConfig(msg.send);
         findBoard(msg, function (err, board) {
             if (err) {
@@ -143,17 +143,14 @@ module.exports = function (robot) {
                         msg.send("* " + list.name);
                     });
                 });
-            } else {
-                msg.reply("I couldn't find a board named: " + room + ".");
             }
         });
     });
 
     // list all the cards in the given list of the current board
     robot.respond(/list cards in [\\"\\'](.+)[\\"\\']$/i, function (msg) {
-        var room = findRoom(msg);
         var listName = msg.match[1];
-        msg.reply("Looking up the cards for " + room + " in list" + list + ", one sec.");
+        msg.reply("Looking up the cards in list" + list + ", one sec.");
         ensureConfig(msg.send);
         findBoard(msg, function (err, board) {
             if (err) {
@@ -185,14 +182,11 @@ module.exports = function (robot) {
                         msg.reply("I couldn't find a list named: " + listName + ".");
                     }
                 });
-            } else {
-                msg.reply("I couldn't find a board named: " + room + ".");
             }
         });
     });
 
     robot.respond(/create new [\\"\\'](.+)[\\"\\'] in [\\"\\'](.+)[\\"\\']$/i, function (msg) {
-        var room = findRoom(msg);
         var cardName = msg.match[1];
         var listName = msg.match[2];
 
@@ -221,18 +215,15 @@ module.exports = function (robot) {
                         msg.reply("I couldn't find a list named: " + listName + ".");
                     }
                 });
-            } else {
-                msg.reply("I couldn't find a board named: " + room + ".");
             }
         });
     });
 
     robot.respond(/move (\w+) to [\\"\\'](.+)[\\"\\']$/i, function (msg) {
-        var room = findRoom(msg);
         var cardId = msg.match[1];
         var listName = msg.match[2];
 
-        msg.reply("Sure thing boss. I'll create that card for you.");
+        msg.reply("Sure thing boss. I'll move that card for you.");
         ensureConfig(msg.send);
         findBoard(msg, function (err, board) {
             if (err) {
@@ -257,8 +248,6 @@ module.exports = function (robot) {
                         msg.reply("I couldn't find a list named: " + listName + ".");
                     }
                 });
-            } else {
-                msg.reply("I couldn't find a board named: " + room + ".");
             }
         });
     });
