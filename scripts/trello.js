@@ -69,6 +69,7 @@ module.exports = function (robot) {
         if (savedBoardName) {
             boardName = savedBoardName;
         }
+        msg.reply("Using Board " + boardName);
         trello.get("/1/organizations/" + process.env.HUBOT_TRELLO_ORGANIZATION + "/boards", function (err, data) {
             if (err) {
                 callback(err);
