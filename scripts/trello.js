@@ -1,5 +1,5 @@
 // Description:
-//   Manage the Trello Boards of your organisation from Hubot!
+//   Manage the Trello Boards of your organization from Hubot!
 //
 // Dependencies:
 //   "node-trello": "latest"
@@ -11,9 +11,8 @@
 //
 // Commands:
 //
-//   hubot trello new "<list>" <name> - Create a new Trello card in the list
-//   hubot trello list "<list>" - Show cards on list
-//   hubot trello move <shortLink> "<list>" - Move a card to a different list
+//   hubot trello help - Show detailed help to the trello hubot
+//   hubot list boards - Show a list of boards of your Trello organization
 //
 //
 // Author:
@@ -84,7 +83,7 @@ module.exports = function (robot) {
             if (boards && boards.length > 0) {
                 callback(boards[0]);
             } else {
-                msg.reply("Ähm, I couldn't find a board named: " + boardName + "?!");
+                msg.reply("Well, I couldn't find a board named: " + boardName + "?!");
             }
         });
     }
