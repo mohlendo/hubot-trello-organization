@@ -1,4 +1,4 @@
-hubot-trello
+hubot-trello-organization
 ============
 
 manage your trello board from hubot
