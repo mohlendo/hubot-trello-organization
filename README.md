@@ -12,16 +12,16 @@ Add **hubot-trello** to your `package.json` file:
 "dependencies": {
   "hubot": ">= 2.5.1",
   "hubot-scripts": ">= 2.4.2",
-  "hubot-trello": "*"
+  "hubot-trello-organization": "*"
 }
 ```
 
-OR run `npm install --save hubot-trello`
+OR run `npm install --save hubot-trello-organization`
 
-Add **hubot-trello** to your `external-scripts.json`:
+Add **hubot-trello-organization** to your `external-scripts.json`:
 
 ```json
-["hubot-trello"]
+["hubot-trello-organization"]
 ```
 
 Run `npm install`
@@ -32,7 +32,7 @@ Run `npm install`
 ```
 HUBOT_TRELLO_KEY    - Trello application key
 HUBOT_TRELLO_TOKEN  - Trello API token
-HUBOT_TRELLO_BOARD  - The ID of the Trello board you will be working with
+HUBOT_TRELLO_ORGANIZATION  - The ID or name of the Trello organization you want to work with
 ```
 
 - To get your key, go to: `https://trello.com/1/appKey/generate`

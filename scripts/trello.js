@@ -69,21 +69,21 @@ module.exports = function (robot) {
         if (savedBoardName) {
             boardName = savedBoardName;
         }
-        msg.reply("Loading Board " + boardName);
+        msg.reply("I'm loading the trello board " + boardName + ", first.");
         trello.get("/1/organizations/" + process.env.HUBOT_TRELLO_ORGANIZATION + "/boards", function (err, data) {
             if (err) {
                 callback(err);
                 return;
             }
-            console.log(data);
+
             var boards = data.filter(function (board) {
                 return board.name.toLowerCase() === boardName.toLowerCase();
             });
-            console.log(boards);
+
             if (boards && boards.length > 0) {
                 callback(undefined, boards[0]);
             } else {
-                msg.reply("I couldn't find a board named: " + boardName + ".");
+                msg.reply("Ähm, I couldn't find a board named: " + boardName + "?!");
                 callback(undefined, undefined);
             }
         });
@@ -105,7 +105,6 @@ module.exports = function (robot) {
             }
         });
     }
-
 
     // check the config first
     ensureConfig(console.log);
@@ -188,7 +187,7 @@ module.exports = function (robot) {
         });
     });
 
-    robot.respond(/create new [\\"\\'](.+)[\\"\\'] in [\\"\\'](.+)[\\"\\']$/i, function (msg) {
+    robot.respond(/add new [\\"\\'](.+)[\\"\\'] to [\\"\\'](.+)[\\"\\']$/i, function (msg) {
         var cardName = msg.match[1];
         var listName = msg.match[2];
 
@@ -259,6 +258,20 @@ module.exports = function (robot) {
         var room = findRoom(msg);
         var boardName = msg.match[1];
         saveBoard(room, boardName);
-        msg.send("Ok, from now on this room is combined to the trello board: " + boardName);
+        msg.send("Ok, from now on this room is connected to the trello board: " + boardName);
+    });
+
+    robot.respond(/trello help/i, function(msg) {
+        var message = [];
+        message.push("I can help you to manage your trello boards!");
+        message.push("Use me to create/move cards and much more. Here's how:");
+        message.push("");
+        message.push(robot.name + " set board to \"<board name>\" - From now on this room is connected to the given board.");
+        message.push(robot.name + " list boards - See all the trello boards for your organization.");
+        message.push(robot.name + " list lists - Lists all the lists of your current board.");
+        message.push(robot.name + " list cards in \"<list name>\" - Show all cards of the given list.");
+        message.push(robot.name + " add new \"<card name>\" to \"<list name>\" - Add a new card to the list with the given name.");
+        message.push(robot.name + " move \"<card shortLink>\" to \"<list name>\" - Move the card to a different list.");
+        msg.send(message.join('\n'));
     });
 };
