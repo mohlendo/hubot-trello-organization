@@ -70,9 +70,10 @@ module.exports = function (robot) {
             boardName = savedBoardName;
         }
         msg.reply("I'm loading the trello board " + boardName + ", first.");
-        trello.get("/1/organizations/" + process.env.HUBOT_TRELLO_ORGANIZATION + "/boards", function (err, data) {
+        trello.get("/1/organizations/" + process.env.HUBOT_TRELLO_ORGANIZATION + "/boards", function (data) {
             if (err) {
-                callback(err);
+                console.error(err);
+                msg.reply("Sorry, but there was an error reading the list of boards.");
                 return;
             }
 
@@ -81,27 +82,27 @@ module.exports = function (robot) {
             });
 
             if (boards && boards.length > 0) {
-                callback(undefined, boards[0]);
+                callback(boards[0]);
             } else {
                 msg.reply("Ähm, I couldn't find a board named: " + boardName + "?!");
-                callback(undefined, undefined);
             }
         });
     }
 
     function findList(msg, board, listName, callback) {
-        trello.get("/1/boards/" + board.id + "/lists", function (err, data) {
+        trello.get("/1/boards/" + board.id + "/lists", function (data) {
             if (err) {
-                callback(err);
+                console.error(err);
+                msg.reply("Sorry, but there was an error reading the list of lists.");
                 return;
             }
             var lists = data.filter(function (list) {
                 return list.name.toLowerCase() === listName.toLowerCase();
             });
             if (lists && lists.length > 0) {
-                callback(undefined, lists[0]);
+                callback(lists[0]);
             } else {
-                callback(undefined, undefined);
+                msg.reply("I couldn't find a list named: " + listName + ".");
             }
         });
     }
@@ -129,22 +130,17 @@ module.exports = function (robot) {
     robot.respond(/list lists$/i, function (msg) {
         msg.reply("Looking up the lists, one sec.");
         ensureConfig(msg.send);
-        findBoard(msg, function (err, board) {
-            if (err) {
-                msg.reply("Sorry, but there was an error reading the list of boards.");
-                return;
-            }
-            if (board) {
-                trello.get("/1/boards/" + board.id + "/lists", function (err, data) {
-                    if (err) {
-                        msg.reply("Sorry, but there was an error reading the lists.");
-                        return;
-                    }
-                    data.forEach(function (list) {
-                        msg.send("* " + list.name);
-                    });
+        findBoard(msg, function (board) {
+            trello.get("/1/boards/" + board.id + "/lists", function (err, data) {
+                if (err) {
+                    console.error(err);
+                    msg.reply("Sorry, but there was an error reading the lists.");
+                    return;
+                }
+                data.forEach(function (list) {
+                    msg.send("* " + list.name);
                 });
-            }
+            });
         });
     });
 
@@ -153,37 +149,24 @@ module.exports = function (robot) {
         var listName = msg.match[1];
         msg.reply("Looking up the cards in list" + list + ", one sec.");
         ensureConfig(msg.send);
-        findBoard(msg, function (err, board) {
-            if (err) {
-                msg.reply("Sorry, but there was an error reading the list of boards.");
-                return;
-            }
-            if (board) {
-                findList(msg, board, listName, function (err, list) {
+        findBoard(msg, function (board) {
+            findList(msg, board, listName, function (list) {
+                trello.get("/1/lists/" + list.id, {cards: "open"}, function (err, data) {
                     if (err) {
-                        msg.reply("Sorry, but there was an error reading the lists.");
+                        console.error(err);
+                        msg.reply("Sorry, but there was an error showing the cards.");
                         return;
                     }
-                    if (list) {
-                        trello.get("/1/lists/" + list.id, {cards: "open"}, function (err, data) {
-                            if (err) {
-                                msg.reply("Sorry, but there was an error showing the cards.");
-                                return;
-                            }
-                            if (data.cards.length > 0) {
-                                msg.reply("Here are all the cards in " + data.name + ":");
-                                data.cards.forEach(function (card) {
-                                    msg.send("* [" + card.shortLink + "] #" + card.name + " - " + card.shortUrl);
-                                });
-                            } else {
-                                msg.reply("No cards are currently in the " + data.name + " list.");
-                            }
+                    if (data.cards.length > 0) {
+                        msg.reply("Here are all the cards in " + data.name + ":");
+                        data.cards.forEach(function (card) {
+                            msg.send("* [" + card.shortLink + "] #" + card.name + " - " + card.shortUrl);
                         });
                     } else {
-                        msg.reply("I couldn't find a list named: " + listName + ".");
+                        msg.reply("No cards are currently in the " + data.name + " list.");
                     }
                 });
-            }
+            });
         });
     });
 
@@ -193,30 +176,17 @@ module.exports = function (robot) {
 
         msg.reply("Sure thing boss. I'll create that card for you.");
         ensureConfig(msg.send);
-        findBoard(msg, function (err, board) {
-            if (err) {
-                msg.reply("Sorry, but there was an error reading the list of boards.");
-                return;
-            }
-            if (board) {
-                findList(msg, board, listName, function (err, list) {
+        findBoard(msg, function (board) {
+            findList(msg, board, listName, function (list) {
+                trello.post("/1/cards", {name: cardName, idList: list.id}, function (err, data) {
                     if (err) {
-                        msg.reply("Sorry, but there was an error reading the lists.");
+                        console.error(err);
+                        msg.reply("There was an error creating the card");
                         return;
                     }
-                    if (list) {
-                        trello.post("/1/cards", {name: cardName, idList: list.id}, function (err, data) {
-                            if (err) {
-                                msg.reply("There was an error creating the card");
-                                return;
-                            }
-                            msg.reply("OK, I created that card for you. You can see it here: " + data.url);
-                        });
-                    } else {
-                        msg.reply("I couldn't find a list named: " + listName + ".");
-                    }
+                    msg.reply("OK, I created that card for you. You can see it here: " + data.url);
                 });
-            }
+            });
         });
     });
 
@@ -226,30 +196,17 @@ module.exports = function (robot) {
 
         msg.reply("Sure thing boss. I'll move that card for you.");
         ensureConfig(msg.send);
-        findBoard(msg, function (err, board) {
-            if (err) {
-                msg.reply("Sorry, but there was an error reading the list of boards.");
-                return;
-            }
-            if (board) {
-                findList(msg, board, listName, function (err, list) {
+        findBoard(msg, function (board) {
+            findList(msg, board, listName, function (list) {
+                trello.put("/1/cards/" + cardId + "/idList", {value: list.id}, function (err, data) {
                     if (err) {
-                        msg.reply("Sorry, but there was an error reading the lists.");
+                        console.error(err);
+                        msg.reply("Sorry boss, I couldn't move that card after all.");
                         return;
                     }
-                    if (list) {
-                        trello.put("/1/cards/"+cardId+"/idList", {value: list.id}, function (err, data) {
-                            if (err) {
-                                msg.reply("Sorry boss, I couldn't move that card after all.");
-                                return;
-                            }
-                            msg.reply("Yep, ok, I moved that card to " + listName + ".");
-                        });
-                    } else {
-                        msg.reply("I couldn't find a list named: " + listName + ".");
-                    }
+                    msg.reply("Yep, ok, I moved that card to " + listName + ".");
                 });
-            }
+            });
         });
     });
 
@@ -261,7 +218,7 @@ module.exports = function (robot) {
         msg.send("Ok, from now on this room is connected to the trello board: " + boardName);
     });
 
-    robot.respond(/trello help/i, function(msg) {
+    robot.respond(/trello help/i, function (msg) {
         var message = [];
         message.push("I can help you to manage your trello boards!");
         message.push("Use me to create/move cards and much more. Here's how:");
