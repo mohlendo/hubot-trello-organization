@@ -103,7 +103,7 @@ showCards = (msg, list_name) ->
                 msg.send "* [#{card.shortLink}] #{card.name} - #{card.shortUrl}" for card in data.cards unless err and data.cards.length == 0
                 msg.reply "No cards are currently in the #{data.name} list." if data.cards.length == 0 and !err
               break
-          if found_list == false
+          if not found_list
             msg.reply "I couldn't find a list named: #{list_name}."
         break
 

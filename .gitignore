@@ -29,3 +29,5 @@ node_modules
 
 # ignore test directory
 test/
+
+.idea
