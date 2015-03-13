@@ -70,7 +70,7 @@ module.exports = function (robot) {
             boardName = savedBoardName;
         }
         msg.reply("I'm loading the trello board " + boardName + ", first.");
-        trello.get("/1/organizations/" + process.env.HUBOT_TRELLO_ORGANIZATION + "/boards", function (data) {
+        trello.get("/1/organizations/" + process.env.HUBOT_TRELLO_ORGANIZATION + "/boards", function (err, data) {
             if (err) {
                 console.error(err);
                 msg.reply("Sorry, but there was an error reading the list of boards.");
@@ -90,7 +90,7 @@ module.exports = function (robot) {
     }
 
     function findList(msg, board, listName, callback) {
-        trello.get("/1/boards/" + board.id + "/lists", function (data) {
+        trello.get("/1/boards/" + board.id + "/lists", function (err, data) {
             if (err) {
                 console.error(err);
                 msg.reply("Sorry, but there was an error reading the list of lists.");
