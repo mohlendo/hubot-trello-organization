@@ -75,9 +75,11 @@ module.exports = function (robot) {
                 callback(err);
                 return;
             }
+            console.log(data);
             var boards = data.some(function (board) {
                 return board.name.toLowerCase() === boardName.toLowerCase();
             });
+            console.log(boards);
             if (boards && boards.length > 0) {
                 callback(undefined, boards[0]);
             } else {
