@@ -76,7 +76,7 @@ module.exports = function (robot) {
                 return;
             }
             console.log(data);
-            var boards = data.some(function (board) {
+            var boards = data.filter(function (board) {
                 return board.name.toLowerCase() === boardName.toLowerCase();
             });
             console.log(boards);
@@ -95,7 +95,7 @@ module.exports = function (robot) {
                 callback(err);
                 return;
             }
-            var lists = data.some(function (list) {
+            var lists = data.filter(function (list) {
                 return list.name.toLowerCase() === listName.toLowerCase();
             });
             if (lists && lists.length > 0) {
