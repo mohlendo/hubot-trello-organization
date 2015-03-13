@@ -1,12 +1,12 @@
 hubot-trello-organization
 ============
 
-manage your trello board from hubot
+manage trello boards of your organization from hubot
 
 
 ## Installation
 
-Add **hubot-trello** to your `package.json` file:
+Add **hubot-trello-organization** to your `package.json` file:
 
 ```json
 "dependencies": {
@@ -37,8 +37,6 @@ HUBOT_TRELLO_ORGANIZATION  - The ID or name of the Trello organization you want 
 
 - To get your key, go to: `https://trello.com/1/appKey/generate`
 - To get your token, go to: `https://trello.com/1/authorize?key=<<your key>>&name=Hubot+Trello&expiration=never&response_type=token&scope=read,write`
-- Figure out what board you want to use, grab it's id from the url `https://trello.com/board/<<board name>>/<<board id>>`
-
 
 ## Sample Interaction
 
