@@ -4,6 +4,6 @@
 
 export HUBOT_TRELLO_KEY=''
 export HUBOT_TRELLO_TOKEN=''
-export HUBOT_TRELLO_BOARD=''
+export HUBOT_TRELLO_ORGANIZATION=''
 
 ./bin/hubot

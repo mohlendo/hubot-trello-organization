@@ -10,13 +10,12 @@
 //   HUBOT_TRELLO_ORGANIZATION - The ID or name of the Trello organisation
 //
 // Commands:
-//
 //   hubot trello help - Show detailed help to the trello hubot
 //   hubot list boards - Show a list of boards of your Trello organization
 //
 //
 // Author:
-//   Manuel Ohlendorf <m.ohlendorf@gmail.com
+//   Manuel Ohlendorf <m.ohlendorf@gmail.com>
 
 var Trello = require('node-trello');
 var trello = new Trello(process.env.HUBOT_TRELLO_KEY, process.env.HUBOT_TRELLO_TOKEN)
