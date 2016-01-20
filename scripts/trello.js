@@ -109,6 +109,24 @@ module.exports = function (robot) {
         });
     }
 
+    function findUser(msg, userName, callback) {
+        trello.get("/1/organizations/" + process.env.HUBOT_TRELLO_ORGANIZATION + "/members", function (err, data) {
+            if (err) {
+                console.error(err);
+                msg.reply("Sorry, but there was an error reading the list of members.");
+                return;
+            }
+            var members = data.filter(function (member) {
+                return username.name.toLowerCase() === userName.toLowerCase();
+            });
+            if (members && members.length > 0) {
+                callback(members[0]);
+            } else {
+                msg.reply("I couldn't find a members with username: " + userName + ".");
+            }
+        });
+    }
+
     // check the config first
     ensureConfig(console.log);
 
@@ -208,6 +226,24 @@ module.exports = function (robot) {
                     }
                     msg.reply("Yep, ok, I moved that card to " + listName + ".");
                 });
+            });
+        });
+    });
+
+    robot.respond(/assign (\w+) to (\w+)$/i, function (msg) {
+        var userName = msg.match[1];
+        var cardId = msg.match[2];
+
+        msg.reply("Sure thing boss. I'll assign the members for you.");
+        ensureConfig(msg.send);
+        findUser(msg, userName, function (user) {
+            trello.post("/1/cards/" + cardId + "/idMembers", {value: user.id}, function (err, data) {
+                if (err) {
+                    console.error(err);
+                    msg.reply("Sorry boss, I couldn't assign the member to card.");
+                    return;
+                }
+                msg.reply("Yep, ok, I assigned " + userName + ".");
             });
         });
     });
