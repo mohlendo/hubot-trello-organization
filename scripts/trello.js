@@ -117,7 +117,7 @@ module.exports = function (robot) {
                 return;
             }
             var members = data.filter(function (member) {
-                return username.name.toLowerCase() === userName.toLowerCase();
+                return member.username.toLowerCase() === userName.toLowerCase();
             });
             if (members && members.length > 0) {
                 callback(members[0]);
