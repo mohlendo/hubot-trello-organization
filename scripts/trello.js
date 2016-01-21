@@ -274,6 +274,7 @@ module.exports = function (robot) {
         message.push(robot.name + " list cards in \"<list name>\" - Show all cards of the given list.");
         message.push(robot.name + " add new \"<card name>\" to \"<list name>\" - Add a new card to the list with the given name.");
         message.push(robot.name + " move \"<card shortLink>\" to \"<list name>\" - Move the card to a different list.");
+        message.push(robot.name + " assign \"<username>\" to \"<card shortLink>\" - Assign user to card.");
         msg.send(message.join('\n'));
     });
 };
